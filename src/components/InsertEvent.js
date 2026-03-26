@@ -2,24 +2,46 @@ import { useEffect, useState } from "react";
 import { supabase } from "../utils/supabase";
 import { useNavigate } from "react-router-dom";
 
-function AddEvent() {
+function InsertEvent() {
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
     const [eventDateTime, setEventDateTime] = useState(""); 
     const [image, setImage] = useState(null);
     const [preview, setPreview] = useState(null);
+    const [upcomingEvent, setUpcomingEvent] = useState(null);
     
     const navigate = useNavigate();
 
     useEffect(() => {
-        checkUser();
-    }, []);
-
-    async function checkUser() {
+      async function init() {
         const { data } = await supabase.auth.getUser();
 
         if(!data.user){
             navigate("/adminLogin");
+            return;
+        }
+        fetchUpcomingEvent();
+    }
+    
+        init();
+    }, []);
+
+    async function fetchUpcomingEvent() {
+
+        const { data, error } = await supabase
+            .from("events")
+            .select("*")
+            .gte("event_date_time", new Date().toISOString()) 
+            .order("event_date_time", {ascending:true})
+            .limit(1);
+
+        if (error) {
+            console.log(error);
+            return;
+        }    
+
+        if ( data && data.length > 0) {
+            setUpcomingEvent(data[0]);
         }
     }
 
@@ -27,6 +49,7 @@ function AddEvent() {
 
         if (!title || !eventDateTime) {
             alert("Title and Date are required");
+            return;
         }
 
         let imageUrl = null;
@@ -58,7 +81,7 @@ function AddEvent() {
                 {   title, 
                     description, 
                     image_url: imageUrl,
-                    event_date_time: eventDateTime
+                    event_date_time: new Date(eventDateTime).toISOString()
                 }
             ]);
 
@@ -67,12 +90,11 @@ function AddEvent() {
             alert("You are not authorized to add events OR you made a mistake");
         } else {
             alert("Event created!");
-       
-        
+            fetchUpcomingEvent();
+
          // Clear Form
             setTitle("");
             setDescription("");
-            setImage("");
             setEventDateTime("");
             setImage(null);
             setPreview(null);
@@ -84,7 +106,7 @@ function AddEvent() {
 
             <div className="flex flex-col gap-4 w-[400px]">
 
-                <h2 className="text-xl font-smeibold">
+                <h2 className="text-xl font-semibold">
                     Add Upcoming Event    
                 </h2>
 
@@ -131,7 +153,16 @@ function AddEvent() {
                 className="bg-blue-600 text-white p-2 rounded hover:bg-blue-700 cursor-pointer" 
                 onClick={createEvent} >
                 Add Upcoming Event
-            </button>        
+            </button>
+
+            {upcomingEvent && (
+                <button
+                    className="bg-green-600 text-white p-2 rounded hover:bg-green-700 cursor-pointer"
+                    onClick={() => navigate(`/edit-event/${upcomingEvent.id}`)}
+                >
+                    Edit Current Upcoming Event
+                </button>
+            )}        
         
         </div>
     </div>
@@ -139,4 +170,4 @@ function AddEvent() {
     );
 }
 
-export default AddEvent;
+export default InsertEvent;

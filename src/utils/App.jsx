@@ -7,7 +7,8 @@ import { useEffect , useState } from "react";
 import { createBrowserRouter, RouterProvider , Outlet} from "react-router-dom";
 import AdminLogin from "../components/AdminLogin.js";
 import EventList from "../components/EventList.js";
-import AddEvent from "../components/InsertEvent.js";
+import InsertEvent from "../components/InsertEvent.js";
+import EditEvent from "../components/EditEvent.js";
 import Home from "../components/Home.js";
 
 const About = lazy(() => import("../components/About.js"));
@@ -86,10 +87,18 @@ const appRouter = createBrowserRouter([
                 ),
             },
             {
-                path:"/addEvent",
+                path:"/insertEvent",
                 element: (
                     <Suspense fallback={<h1>Loading...</h1>}>
-                        <AddEvent />
+                        <InsertEvent />
+                    </Suspense>
+                ),
+            },
+            {
+                path: "/edit-event/:id",
+                element: (
+                    <Suspense fallback={<h1>Loading...</h1>}>
+                        <EditEvent />
                     </Suspense>
                 ),
             },

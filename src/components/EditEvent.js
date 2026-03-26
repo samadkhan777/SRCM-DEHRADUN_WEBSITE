@@ -11,6 +11,7 @@ function EditEvent() {
     const [image, setImage] = useState(null);
     const [preview, setPreview] = useState(null);
     const [existingImage, setExistingImage] = useState(null);
+    const [upcomingEvent, setUpcomingEvent] = useState(null);
     
     const navigate = useNavigate();
 
@@ -42,7 +43,7 @@ function EditEvent() {
         
         setTitle(data.title);
         setDescription(data.description);
-        setEventDateTime(data.event_date_time);
+        setEventDateTime(data.event_date_time?.slice(0,16));
         setExistingImage(data.image_url);
         setPreview(data.image_url);
     }
@@ -77,32 +78,42 @@ function EditEvent() {
             imageUrl = publicUrlData.publicUrl;    
         }
 
-        const {error} = await supabase
+        console.log("ID being used:", id);
+
+        const {data: checkdata} = await supabase
             .from("events")
-            .update([
+            .select("*")
+            .eq("id",id);
+
+        console.log("Matching row: ",checkdata);    
+
+        const { error} = await supabase
+            .from("events")
+            .update(
                 {   title, 
                     description, 
                     image_url: imageUrl,
-                    event_date_time: eventDateTime
+                    event_date_time: new Date(eventDateTime).toISOString(),
                 }
-            ])
-              .eq("id", id);
+            )
+              .eq("id", id)
 
         if (error) {
-            console.log(error);
-            alert("Update failed");
+            console.log("UPDATE ERROR:", error);
+            alert(error.message);
         } else {
             alert("Event updated!");
-            navigate("/events");
-        }    
-    }
+            navigate("/events" , { state: { refresh: true }});
+        }  
+        
+    }   
 
     return (
         <div className="flex justify-center mt-10">
 
             <div className="flex flex-col gap-4 w-[400px]">
 
-                <h2 className="text-xl font-smeibold">
+                <h2 className="text-xl font-semibold">
                     Edit Event    
                 </h2>
 

@@ -1,9 +1,12 @@
 import { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
 import { supabase } from "../utils/supabase";
 
 function EventList() {
     const [upcomingEvents, setUpcomingEvents] = useState([]);
     const [pastEvents, setPastEvents] = useState([]);
+
+    const location = useLocation();
 
     useEffect( () => {
         fetchEvents();
@@ -15,20 +18,20 @@ function EventList() {
         .select("*")
         .order("event_date_time", {ascending:true });
 
+        console.log("EVENTS:", data);
+
         if (error) {
             console.log(error);
             return;
         }
 
-        const now = new Date();
+        const now = new Date().toISOString();
         
         const upcoming = [];
         const past = [];
 
         data.forEach(event => {
-            const eventDate = new Date(event.event_date_time);
-
-            if (eventDate >= now ) {
+            if (event.event_date_time >= now ) {
                 upcoming.push(event);
             } else {
                 past.push(event);
@@ -115,7 +118,7 @@ function EventList() {
                         </h2>
 
                         <p className="text-sm text-gray-500">
-                            {new Date(event.event_date_time).toLocaleString("en-In" , {
+                            {new Date(event.event_date_time).toLocaleString("en-IN" , {
                                 day: "numeric",
                                 month: "short",
                                 year: "numeric",
