@@ -11,7 +11,6 @@ function EditEvent() {
     const [image, setImage] = useState(null);
     const [preview, setPreview] = useState(null);
     const [existingImage, setExistingImage] = useState(null);
-    const [upcomingEvent, setUpcomingEvent] = useState(null);
     
     const navigate = useNavigate();
 
@@ -109,23 +108,23 @@ function EditEvent() {
     }   
 
     return (
-        <div className="flex justify-center mt-10">
+        <div className="flex justify-center mt-10 bg-white dark:bg-gray-900 min-h-screen">
 
-            <div className="flex flex-col gap-4 w-[400px]">
+            <div className="flex flex-col gap-4 w-100 text-black ">
 
                 <h2 className="text-xl font-semibold">
                     Edit Event    
                 </h2>
 
             <input
-                className="border p-2 rounded"
+                className="border p-2 rounded bg-white dark-gray-800 dark:border-gray-600 "
                 value={title}
                 placeholder="Event title"
                 onChange={(e) => setTitle(e.target.value)}
             />
 
             <textarea
-                className="border p-2 rounded"
+                className="border p-2 rounded bg-white dark-gray-800 dark:border-gray-600 "
                 value={description}
                 placeholder="Description"
                 onChange={(e) => setDescription(e.target.value)}
@@ -133,7 +132,7 @@ function EditEvent() {
 
             <input 
                 type="datetime-local"
-                className="border p-2 rounded"
+                className="border p-2 rounded bg-white dark-gray-800 dark:border-gray-600 "
                 value={eventDateTime}
                 onChange={(e) => setEventDateTime(e.target.value)}
             />
@@ -147,7 +146,7 @@ function EditEvent() {
             )}
 
             <input
-                className="border p-2 rounded hover:cursor-pointer" 
+                className="border p-2 rounded hover:cursor-pointer bg-white dark-gray-800 dark:border-gray-600" 
                 type="file"
                 onChange={(e) => {
                     const file = e.target.files[0];
@@ -157,7 +156,7 @@ function EditEvent() {
             />
 
             <button 
-                className="bg-green-600 text-white p-2 rounded hover:bg-green-700 cursor-pointer" 
+                className="bg-green-600  p-2 rounded hover:bg-green-700 cursor-pointer" 
                 onClick={createEvent} >
                 Update Event
             </button>        

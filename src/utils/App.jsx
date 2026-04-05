@@ -7,9 +7,11 @@ import { useEffect , useState } from "react";
 import { createBrowserRouter, RouterProvider , Outlet} from "react-router-dom";
 import AdminLogin from "../components/AdminLogin.js";
 import EventList from "../components/EventList.js";
+import PastEvents from "../components/PastEvents.js";
 import InsertEvent from "../components/InsertEvent.js";
 import EditEvent from "../components/EditEvent.js";
 import Home from "../components/Home.js";
+import AdminDashboard from "../components/AdminDashboard.js";
 
 const About = lazy(() => import("../components/About.js"));
 
@@ -79,6 +81,14 @@ const appRouter = createBrowserRouter([
                 ),
             },
             {
+                path:"/adminDashboard",
+                element: (
+                    <Suspense fallback={<h1>Loading...</h1>}>
+                        <AdminDashboard />
+                    </Suspense>
+                ),
+            },
+            {
                 path:"/eventList",
                 element: (
                     <Suspense fallback={<h1>Loading...</h1>}>
@@ -99,6 +109,14 @@ const appRouter = createBrowserRouter([
                 element: (
                     <Suspense fallback={<h1>Loading...</h1>}>
                         <EditEvent />
+                    </Suspense>
+                ),
+            },
+            {
+                path: "/eevent/:id",
+                element: (
+                    <Suspense fallback={<h1>Loading...</h1>}>
+                        <PastEvents />
                     </Suspense>
                 ),
             },

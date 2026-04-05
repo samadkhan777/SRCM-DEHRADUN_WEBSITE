@@ -1,15 +1,13 @@
 import { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
 import { supabase } from "../utils/supabase";
 
 function EventList() {
     const [upcomingEvents, setUpcomingEvents] = useState([]);
     const [pastEvents, setPastEvents] = useState([]);
 
-    const location = useLocation();
-
     useEffect( () => {
         fetchEvents();
+        fetchPastEvents();
     }, []);
 
     async function fetchEvents() {
@@ -18,8 +16,6 @@ function EventList() {
         .select("*")
         .order("event_date_time", {ascending:true });
 
-        console.log("EVENTS:", data);
-
         if (error) {
             console.log(error);
             return;
@@ -27,19 +23,35 @@ function EventList() {
 
         const now = new Date().toISOString();
         
-        const upcoming = [];
-        const past = [];
-
-        data.forEach(event => {
-            if (event.event_date_time >= now ) {
-                upcoming.push(event);
-            } else {
-                past.push(event);
-            }
-        });
-
+        const upcoming = data.filter( e => e.event_date_time >= now );
+        
+        const past = data.filter( e => e.event_date_time < now );
+    
         setUpcomingEvents(upcoming);
         setPastEvents(past.reverse());
+    }
+
+    async function fetchPastEvents() {
+        const { data, error } = await supabase 
+            .from("events")
+            .select("*")
+            .lt("event_date_time", new Date().toISOString() )
+            .lt("event_date_time", { ascending:false } )
+            .limit(2);
+
+        if (error) {
+            console.error(error);
+        }   else {
+            setPastEvents(data);
+        }
+
+    }
+
+    function formatDate(dateString) {
+            return new Date(dateString).toLocaleDateString("en-IN", {
+                day: "numeric",
+                month: "long",
+            });
     }
 
     return (
@@ -103,29 +115,32 @@ function EventList() {
         )}
                         {/* Past Events */}        
 
-            <h1 className="text-2xl font-bold mb-4">Past Events</h1>
+            <h1 className="text-2xl font-bold mb-4 text-center dark:text-white">Past Events</h1>
 
-            <div className="grid md:grid-cols-3 gap-4">
+            <div className="flex flex-col gap-6 max-w-3xl mx-auto">
                 {pastEvents.length === 0 && (
                     <p>No past Events to Show</p>
                 )}
 
                 {pastEvents.map(event => (
-                    <div key={event.id} className="border rounded p-4 hover:shadow cursor-pointer">
+                    <div key={event.id} className="relative rounded-2xl overflow-hidden shadow-md hover:scale-105 transition duration-300 cursor-pointer">
                      
-                        <h2 className="font-semibold">
-                            {event.title}
-                        </h2>
+                        <img 
+                            src={event.image_url}
+                            alt={event.title}
+                            className="w-full h-64 object-cover"
+                        />
+                            
+                                {/* IMAGE OVERLAY  */}    
+                        <div className="absolute inset-0 bg-linear-to-t from-black/70 to-transparent flex flex-col justify-end p-4">
+                            <h3 className="text-white text-lg font-semibold">
+                                {event.title}
+                            </h3>
 
-                        <p className="text-sm text-gray-500">
-                            {new Date(event.event_date_time).toLocaleString("en-IN" , {
-                                day: "numeric",
-                                month: "short",
-                                year: "numeric",
-                                hour: "numeric",
-                                minute: "2-digit",
-                            })}
-                        </p>
+                            <p className="text-gray-300 text-sm">
+                                {formatDate(event.event_date_time)}
+                            </p>
+                       </div> 
                     </div>   
                 ))}
             </div>    
