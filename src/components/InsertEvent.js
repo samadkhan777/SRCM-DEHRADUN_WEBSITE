@@ -102,11 +102,11 @@ function InsertEvent() {
     }
 
     return (
-        <div className="flex justify-center mt-10">
+        <div className="flex justify-center mt-10 min-h-screen bg-white dark:bg-gray-900">
 
             <div className="flex flex-col gap-4 w-[400px]">
 
-                <h2 className="text-xl font-semibold">
+                <h2 className="text-xl font-semibold dark:text-white">
                     Add Upcoming Event    
                 </h2>
 

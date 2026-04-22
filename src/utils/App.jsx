@@ -1,10 +1,10 @@
-import React, {Suspense, lazy} from "react";
+import React, { Suspense, lazy, useEffect, useState } from "react";
 import ReactDOM from "react-dom/client";
 import Header from "../components/Header";
 import Error from "../components/Error";
 import Events from "../components/EventList.js";
-import { useEffect , useState } from "react";
-import { createBrowserRouter, RouterProvider , Outlet} from "react-router-dom";
+import { createBrowserRouter, RouterProvider, Outlet } from "react-router-dom";
+
 import AdminLogin from "../components/AdminLogin.js";
 import EventList from "../components/EventList.js";
 import PastEvents from "../components/PastEvents.js";
@@ -12,11 +12,12 @@ import InsertEvent from "../components/InsertEvent.js";
 import EditEvent from "../components/EditEvent.js";
 import Home from "../components/Home.js";
 import AdminDashboard from "../components/AdminDashboard.js";
+import AddPastEventImages from "../components/AddPastEventImages.js"; // ✅ NEW IMPORT
 
 const About = lazy(() => import("../components/About.js"));
 
-
-const AppLayout = () => {  console.log("App running"); 
+const AppLayout = () => {
+    console.log("App running"); 
     const [dark , setDark] = useState(false);
 
     useEffect(() => {
@@ -30,7 +31,7 @@ const AppLayout = () => {  console.log("App running");
         applyTheme(media.matches);
 
         const listener = (e) => applyTheme(e.matches);
-        media.addEventListener( "change" , listener);
+        media.addEventListener("change", listener);
 
         return () => media.removeEventListener("change", listener);
     }, []);
@@ -113,18 +114,27 @@ const appRouter = createBrowserRouter([
                 ),
             },
             {
-                path: "/eevent/:id",
+                path: "/past-event/:id",
                 element: (
                     <Suspense fallback={<h1>Loading...</h1>}>
                         <PastEvents />
                     </Suspense>
                 ),
             },
+
+            {
+                path: "/add-images/:id",
+                element: (
+                    <Suspense fallback={<h1>Loading...</h1>}>
+                        <AddPastEventImages />
+                    </Suspense>
+                ),
+            },
         ],
-        errorElement: <Error/>,
+        errorElement: <Error />,
     },
 ]);
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
-root.render(< RouterProvider router ={appRouter}/>);
+root.render(<RouterProvider router={appRouter} />);

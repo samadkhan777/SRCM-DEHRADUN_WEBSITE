@@ -21,13 +21,13 @@ const Header = () => {
                 </Link>
                
                <nav className="hidden md:flex items-center gap-8"> 
+
+                <Link to="/about" className="font-bold text-gray-700 dark:text-gray-200 ">
+                    About
+                </Link>
                 
                 <Link to="/events" className="font-bold text-gray-700 dark:text-gray-200 ">
                     Events
-                </Link>
-                
-                <Link to="/about" className="font-bold text-gray-700 dark:text-gray-200 ">
-                    About
                 </Link>
                 
                 <button className="font-bold text-gray-700 dark:text-gray-200 ">

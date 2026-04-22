@@ -1,9 +1,12 @@
 import { useEffect, useState } from "react";
 import { supabase } from "../utils/supabase";
+import { useNavigate } from "react-router-dom";
 
 function EventList() {
     const [upcomingEvents, setUpcomingEvents] = useState([]);
     const [pastEvents, setPastEvents] = useState([]);
+
+    const navigate = useNavigate();
 
     useEffect( () => {
         fetchEvents();
@@ -24,25 +27,20 @@ function EventList() {
         const now = new Date().toISOString();
         
         const upcoming = data.filter( e => e.event_date_time >= now );
-        
-        const past = data.filter( e => e.event_date_time < now );
-    
+            
         setUpcomingEvents(upcoming);
-        setPastEvents(past.reverse());
     }
 
     async function fetchPastEvents() {
         const { data, error } = await supabase 
-            .from("events")
+            .from("past_events")
             .select("*")
-            .lt("event_date_time", new Date().toISOString() )
-            .lt("event_date_time", { ascending:false } )
-            .limit(2);
+            .order("event_date_time", {ascending: false });
 
         if (error) {
             console.error(error);
         }   else {
-            setPastEvents(data);
+            setPastEvents(data || []);
         }
 
     }
@@ -123,7 +121,10 @@ function EventList() {
                 )}
 
                 {pastEvents.map(event => (
-                    <div key={event.id} className="relative rounded-2xl overflow-hidden shadow-md hover:scale-105 transition duration-300 cursor-pointer">
+                    <div 
+                        key={event.id} 
+                        onClick={() => navigate(`/past-event/${event.id}`)}
+                        className="relative rounded-2xl overflow-hidden shadow-md hover:scale-105 transition duration-300 cursor-pointer">
                      
                         <img 
                             src={event.image_url}
